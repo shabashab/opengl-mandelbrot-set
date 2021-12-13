@@ -1,5 +1,5 @@
-build: main.cpp
-	g++ -lglfw -lGL -lGLEW -o main main.cpp
+build: src/main.cpp src/window.cpp src/applicationWindow.cpp src/vertexBuffer.cpp src/vertexArrays.cpp
+	g++ -g -lglfw -lglut -lGL -lGLEW -o main src/main.cpp src/window.cpp src/applicationWindow.cpp src/vertexBuffer.cpp src/vertexArrays.cpp src/shader.cpp
 
 run: build
 	./main
