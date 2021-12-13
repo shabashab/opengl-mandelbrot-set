@@ -10,4 +10,5 @@ class Window
 	public:
 		virtual void display();
 		virtual void loop() = 0;
+		virtual void onWindowResize(GLFWwindow* window, int width, int height) {}
 };

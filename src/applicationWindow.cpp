@@ -5,6 +5,10 @@
 
 ApplicationWindow::ApplicationWindow() : Window(1000, 1000, "My application")
 {
+	glfwSetWindowSizeCallback(this->glfwWindow, [](GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	});
 }
 
 
