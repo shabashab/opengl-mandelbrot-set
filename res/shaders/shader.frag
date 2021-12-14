@@ -34,12 +34,15 @@ float normalizeItersCount(int count) {
 
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / screenResolution.xy;
+		vec2 centerCoord = screenResolution.xy / 2;
+		vec2 relCoord = gl_FragCoord.xy - centerCoord;
+
+		vec2 uv = relCoord / screenResolution.x;
 
     float scale = 4.0;
-    vec2 offset = vec2(-2.0, -1.5);
+    vec2 center = vec2(-1, 0);
     
-    vec2 pos = vec2(uv.x, gl_FragCoord.y / screenResolution.x) * scale + offset;
+    vec2 pos = uv.xy * scale + center;
    
     int itersCount = iters_count(pos);
     
