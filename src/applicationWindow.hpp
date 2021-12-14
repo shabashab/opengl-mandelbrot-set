@@ -4,16 +4,19 @@
 #include "vertexArrays.hpp"
 #include "vertexBuffer.hpp"
 #include "shader.hpp"
+#include "model.hpp"
+#include "modelRenderer.hpp"
 
 class ApplicationWindow : public Window
 {
 	private:
-		VertexBuffer* quadVbo;
-		VertexArrays* quadVao;
+		Model* quadModel;
 		Shader* whiteShader;
+		ModelRenderer* renderer;
 		
 	public:
 		ApplicationWindow();
-		virtual void display();
+	protected:
 		virtual void loop();
+		virtual void beforeLoop();
 };

@@ -8,7 +8,8 @@ class Window
 	public:
 		Window(int width, int height, const char* title);
 	public:
-		virtual void display();
+		void display();
+	protected:
 		virtual void loop() = 0;
-		virtual void onWindowResize(GLFWwindow* window, int width, int height) {}
+		virtual void beforeLoop() {}
 };

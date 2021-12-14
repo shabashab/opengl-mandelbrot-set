@@ -8,6 +8,7 @@ Window::Window(int width, int height, const char* title)
 
 void Window::display()
 {
+	this->beforeLoop();
 	while(!glfwWindowShouldClose(this->glfwWindow)) {
 		loop();
 	}

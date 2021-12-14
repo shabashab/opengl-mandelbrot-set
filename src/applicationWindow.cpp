@@ -5,12 +5,10 @@
 
 ApplicationWindow::ApplicationWindow() : Window(1000, 1000, "My application")
 {
-	glfwSetWindowSizeCallback(this->glfwWindow, [](GLFWwindow* window, int width, int height)
-	{
+	glfwSetWindowSizeCallback(this->glfwWindow, [](GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
 	});
 }
-
 
 void ApplicationWindow::loop()
 {
@@ -24,19 +22,13 @@ void ApplicationWindow::loop()
 	GLint uniformLocation = glGetUniformLocation(this->whiteShader->getProgramId(), "screenResolution");
 	glUniform2f(uniformLocation, windowWidth, windowHeight);
 
-	this->quadVao->bind();
-
-	glEnableVertexAttribArray(0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glDisableVertexAttribArray(0);
+	this->renderer->renderModel(this->quadModel);
 
 	glfwSwapBuffers(this->glfwWindow);
 	glfwPollEvents();
 }
 
-void ApplicationWindow::display()
+void ApplicationWindow::beforeLoop()
 {
 	this->whiteShader = new Shader("res/shaders/shader.vert", "res/shaders/shader.frag");
 
@@ -51,18 +43,7 @@ void ApplicationWindow::display()
 		-1.f, -1.f, 0.f,
 		1.f, -1.f, 0.f
 	};
-	int verticesCount = 18;
 
-	quadVao = new VertexArrays();
-	quadVbo = new VertexBuffer(vertices, verticesCount);
-
-	quadVao->bind();
-	quadVbo->bind();
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-	quadVbo->unbind();
-	quadVao->unbind();
-
-	Window::display();
+	this->quadModel = new Model(vertices, sizeof(vertices));
+	this->renderer = new ModelRenderer();
 }
