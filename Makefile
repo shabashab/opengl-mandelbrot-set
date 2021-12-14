@@ -1,7 +1,17 @@
-build: src/main.cpp src/window.cpp src/applicationWindow.cpp src/vertexBuffer.cpp src/vertexArrays.cpp
-	g++ -g -lglfw -lglut -lGL -lGLEW -o main src/main.cpp src/window.cpp src/applicationWindow.cpp src/vertexBuffer.cpp src/vertexArrays.cpp src/shader.cpp src/model.cpp src/modelRenderer.cpp src/shaderProgram.cpp src/shaderProgramBuilder.cpp src/shaderCompiler.cpp
+SRC_DIR := ./src
+OBJ_DIR := ./obj
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+LDFLAGS := -lglfw -lglut -lGL -lGLEW 
+CPPFLAGS := -g
 
-run: build
+main: $(OBJ_FILES)
+	g++ $(LDFLAGS) -o $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	g++ $(CPPFLAGS) -c -o $@ $<
+
+run: main
 	./main
 
-default: build
+default: main
