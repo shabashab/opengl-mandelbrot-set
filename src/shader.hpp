@@ -1,15 +1,21 @@
 #include <GL/glew.h>
 
+#include "shaderCompiler.hpp"
+
 class Shader
 {
 	private:
-		GLuint programId;
+		GLuint shaderId;
+		GLint shaderType;
 	public:
-		Shader(const char* vert_path, const char* frag_path);
+		Shader(GLuint shaderId, GLint shaderType);
 		~Shader();
-	private:
-		GLuint load_vertex_shader(const char* file_path);
-		GLuint load_frament_shader(const char* file_path);
 	public:
-		GLuint getProgramId();
+		GLuint getShaderId();
+		GLint getShaderType();
+
+	private:
+		static ShaderCompiler* compiler;
+	public:
+		static Shader* createFromFile(GLint shaderType, const char* sourcePath);
 };

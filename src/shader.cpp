@@ -5,6 +5,9 @@
 
 #include "shader.hpp"
 
+
+ShaderCompiler* Shader::compiler;
+
 std::string readFile(const char *file_path) {
 	std::ifstream inputStream(file_path);
 	std::string content((std::istreambuf_iterator<char>(inputStream)),
@@ -13,105 +16,52 @@ std::string readFile(const char *file_path) {
 	return content;
 }
 
-GLuint Shader::load_vertex_shader(const char* file_path)
+//TODO: replace GLInt with GLenum
+Shader* Shader::createFromFile(GLint shaderType, const char *sourcePath)
 {
-	GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+	if(compiler == nullptr)
+		compiler = new ShaderCompiler();
 
-	std::string shader_src = readFile(file_path);
-	const char *shader_src_c_str = shader_src.c_str();
+	GLuint shaderId = glCreateShader(shaderType);
 
-	GLint compilation_status = 0;
+	std::ifstream inputStream(sourcePath);
+	std::string content((std::istreambuf_iterator<char>(inputStream)),
+                      (std::istreambuf_iterator<char>()));
 
-	//Compiling the shader
-	std::cout << "Compiling vertex shader " << file_path << "..." << std::endl;
-	glShaderSource(shader, 1, &shader_src_c_str, NULL);
 
-	//Compiling the shader
-	glCompileShader(shader);
+	const char* src = content.c_str();
+	GLint status = compiler->compileShader(shaderId, src);
 
-	//Checking the shader
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compilation_status);
+	std::cout << status << std::endl;
 
-	if(compilation_status == GL_FALSE) {
-		std::cout << "Vertex shader " << file_path << " compilation failed!" << std::endl;
+	if(status == GL_FALSE) {
+		std::string error = compiler->getShaderCompilationError(shaderId);
+		std::cout << error << std::endl;
 
-		GLint logLength;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-
-		std::vector<GLchar> errorLog(logLength);
-		glGetShaderInfoLog(shader, logLength, &logLength, &(errorLog[0]));
-
-		std::cout << &errorLog[0] << std::endl;
-
-		glDeleteShader(shader);
-
-		return 0;
+		glDeleteShader(shaderId);
+		return nullptr;
 	}
 
-	std::cout << "Vertex shader " << file_path << " compiled successfully" << std::endl;
-
-	return shader;
+	return new Shader(shaderId, shaderType);
 }
 
-GLuint Shader::load_frament_shader(const char* file_path)
+GLuint Shader::getShaderId()
 {
-	GLuint shader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	std::string shader_src = readFile(file_path);
-	const char *shader_src_c_str = shader_src.c_str();
-
-	GLint compilation_status = 0;
-
-	//Compiling the shader
-	std::cout << "Compiling fragment shader " << file_path << "..." << std::endl;
-	glShaderSource(shader, 1, &shader_src_c_str, NULL);
-
-	//Compiling the shader
-	glCompileShader(shader);
-
-	//Checking the shader
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compilation_status);
-
-	if(compilation_status == GL_FALSE) {
-		std::cout << "Fragment shader " << file_path << " compilation failed!" << std::endl;
-
-		GLint logLength;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-
-		std::vector<GLchar> errorLog(logLength);
-		glGetShaderInfoLog(shader, logLength, &logLength, &(errorLog[0]));
-
-		std::cout << &errorLog[0] << std::endl;
-
-		glDeleteShader(shader);
-
-		return 0;
-	}
-
-	std::cout << "Fragment shader " << file_path << " compiled successfully" << std::endl;
-
-	return shader;
-};
-
-Shader::Shader(const char* vert_path, const char* frag_path)
-{
-	GLuint vertexShader = this->load_vertex_shader(vert_path);
-	GLuint fragmentShader = this->load_frament_shader(frag_path);
-
-	GLuint program = glCreateProgram();
-
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-
-	glLinkProgram(program);
-
-	glDeleteShader(fragmentShader);
-	glDeleteShader(vertexShader);
-
-	this->programId = program;
+	return this->shaderId;
 }
 
-GLuint Shader::getProgramId()
+GLint Shader::getShaderType()
 {
-	return this->programId;
+	return this->shaderType;
+}
+
+Shader::Shader(GLuint shaderId, GLint type)
+{
+	this->shaderId = shaderId;
+	this->shaderType = type;
+}
+
+Shader::~Shader()
+{
+	glDeleteShader(this->shaderId);
 }

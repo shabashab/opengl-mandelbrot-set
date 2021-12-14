@@ -3,17 +3,19 @@
 #include "window.hpp"
 #include "vertexArrays.hpp"
 #include "vertexBuffer.hpp"
-#include "shader.hpp"
 #include "model.hpp"
 #include "modelRenderer.hpp"
+#include "shaderProgram.hpp"
 
 class ApplicationWindow : public Window
 {
 	private:
 		Model* quadModel;
-		Shader* whiteShader;
 		ModelRenderer* renderer;
+		ShaderProgram* shader;
 		
+	private:
+		void initShaderProgram();
 	public:
 		ApplicationWindow();
 	protected:
