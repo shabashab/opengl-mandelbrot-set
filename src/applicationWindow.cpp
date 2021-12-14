@@ -20,8 +20,14 @@ void ApplicationWindow::loop()
 
 	this->shader->use();
 
-	GLint uniformLocation = this->shader->getUniformLocation("screenResolution");
-	glUniform2f(uniformLocation, windowWidth, windowHeight);
+	GLint screenResolutionUniform = this->shader->getUniformLocation("screenResolution");
+	glUniform2f(screenResolutionUniform, windowWidth, windowHeight);
+
+	GLint centerOffsetUniform = this->shader->getUniformLocation("centerOffset");
+	glUniform2f(centerOffsetUniform, 0, 0);
+
+	GLint zoomUniform = this->shader->getUniformLocation("zoom");
+	glUniform1f(zoomUniform, 4);
 
 	this->renderer->renderModel(this->quadModel);
 

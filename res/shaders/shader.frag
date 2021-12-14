@@ -4,6 +4,8 @@
 #define PI 3.1415926538
 
 uniform vec2 screenResolution;
+uniform vec2 centerOffset;
+uniform float zoom;
 
 out vec4 out_Color;
 
@@ -38,11 +40,8 @@ void main()
 		vec2 relCoord = gl_FragCoord.xy - centerCoord;
 
 		vec2 uv = relCoord / screenResolution.x;
-
-    float scale = 4.0;
-    vec2 center = vec2(-1, 0);
     
-    vec2 pos = uv.xy * scale + center;
+    vec2 pos = uv.xy * zoom + centerOffset;
    
     int itersCount = iters_count(pos);
     
