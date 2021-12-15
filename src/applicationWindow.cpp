@@ -13,6 +13,27 @@ ApplicationWindow::ApplicationWindow() : Window(1000, 1000, "My application")
 
 void ApplicationWindow::loop()
 {
+	int upKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_W) == GLFW_PRESS;
+	int downKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_S) == GLFW_PRESS;
+	int leftKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_A) == GLFW_PRESS;
+	int rightKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_D) == GLFW_PRESS;
+
+	int zoomInKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_E) == GLFW_PRESS;
+	int zoomOutKeyState = glfwGetKey(this->glfwWindow, GLFW_KEY_R) == GLFW_PRESS;
+
+	float zoomAcceleration = 0.01f * zoom;
+	float zoomChange = zoomAcceleration * zoomInKeyState - zoomOutKeyState * zoomAcceleration;
+
+	zoom += zoomChange;
+
+	float speed = 0.01f * zoom;
+
+	float hSpeed = rightKeyState * speed + leftKeyState * speed * -1;
+	float vSpeed = upKeyState * speed + downKeyState * speed * -1;
+
+	centerX += hSpeed;
+	centerY += vSpeed;
+
 	int windowWidth, windowHeight;
 	glfwGetWindowSize(this->glfwWindow, &windowWidth, &windowHeight);
 
@@ -24,10 +45,10 @@ void ApplicationWindow::loop()
 	glUniform2f(screenResolutionUniform, windowWidth, windowHeight);
 
 	GLint centerOffsetUniform = this->shader->getUniformLocation("centerOffset");
-	glUniform2f(centerOffsetUniform, 0, 0);
+	glUniform2f(centerOffsetUniform, centerX, centerY);
 
 	GLint zoomUniform = this->shader->getUniformLocation("zoom");
-	glUniform1f(zoomUniform, 4);
+	glUniform1f(zoomUniform, zoom);
 
 	this->renderer->renderModel(this->quadModel);
 
@@ -35,25 +56,13 @@ void ApplicationWindow::loop()
 	glfwPollEvents();
 }
 
-void ApplicationWindow::initShaderProgram()
-{
-	Shader* vertexShader = Shader::createFromFile(GL_VERTEX_SHADER, "res/shaders/shader.vert");
-	Shader* fragmentShader = Shader::createFromFile(GL_FRAGMENT_SHADER, "res/shaders/shader.frag");
-
-	ShaderProgramBuilder programBuilder;
-
-	programBuilder.setVertexShader(vertexShader);
-	programBuilder.setFragmentShader(fragmentShader);
-
-	this->shader = programBuilder.build();
-
-	delete vertexShader;
-	delete fragmentShader;
-}
-
 void ApplicationWindow::beforeLoop()
 {
-	this->initShaderProgram();
+	this->shader = ShaderProgram::createFromFiles("res/shaders/shader.vert", "res/shaders/shader.frag");
+
+	this->centerX = 0;
+	this->centerY = 0;
+	this->zoom = 4;
 
 	float vertices[] = {
 		//Top right triangle
@@ -68,5 +77,4 @@ void ApplicationWindow::beforeLoop()
 	};
 
 	this->quadModel = new Model(vertices, sizeof(vertices));
-	this->renderer = new ModelRenderer();
-}
+	this->renderer = new ModelRenderer(); }

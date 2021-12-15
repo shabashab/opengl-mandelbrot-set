@@ -13,7 +13,9 @@ class ApplicationWindow : public Window
 		Model* quadModel;
 		ModelRenderer* renderer;
 		ShaderProgram* shader;
-		
+		float centerX;
+		float centerY;
+		float zoom;
 	private:
 		void initShaderProgram();
 	public:

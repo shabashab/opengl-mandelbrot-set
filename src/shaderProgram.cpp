@@ -1,5 +1,7 @@
 #include <iostream>
+
 #include "shaderProgram.hpp"
+#include "shaderProgramBuilder.hpp"
 
 ShaderProgram::ShaderProgram()
 {
@@ -56,4 +58,22 @@ std::string ShaderProgram::getInfoLog()
 GLuint ShaderProgram::getProgramId()
 {
 	return this->programId;
+}
+
+ShaderProgram* ShaderProgram::createFromFiles(const char* vert_path, const char* frag_path)
+{
+	Shader* vertexShader = Shader::createFromFile(GL_VERTEX_SHADER, vert_path);
+	Shader* fragmentShader = Shader::createFromFile(GL_FRAGMENT_SHADER, frag_path);
+
+	ShaderProgramBuilder programBuilder;
+
+	programBuilder.setVertexShader(vertexShader);
+	programBuilder.setFragmentShader(fragmentShader);
+
+	ShaderProgram* program = programBuilder.build();
+
+	delete vertexShader;
+	delete fragmentShader;
+
+	return program;
 }

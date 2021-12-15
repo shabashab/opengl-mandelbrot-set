@@ -20,4 +20,6 @@ class ShaderProgram
 		GLuint getProgramId();
 		void use();
 		GLint getUniformLocation(const char* name);
+	public:
+		static ShaderProgram* createFromFiles(const char* vert_path, const char* frag_path);
 };
